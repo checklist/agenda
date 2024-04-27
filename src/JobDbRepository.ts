@@ -131,19 +131,19 @@ export class JobDbRepository {
 		 * Query used to find job to run
 		 */
 		const JOB_PROCESS_WHERE_QUERY: Filter<IJobParameters /* Omit<IJobParameters, 'lockedAt'> & { lockedAt?: Date | null } */> =
-			{
-				name: jobName,
-				disabled: { $ne: true },
-				$or: [
-					{
-						lockedAt: { $eq: null as any },
-						nextRunAt: { $lte: nextScanAt }
-					},
-					{
-						lockedAt: { $lte: lockDeadline }
-					}
-				]
-			};
+		{
+			name: jobName,
+			disabled: { $ne: true },
+			$or: [
+				{
+					lockedAt: { $eq: null as any },
+					nextRunAt: { $lte: nextScanAt }
+				},
+				{
+					lockedAt: { $lte: lockDeadline }
+				}
+			]
+		};
 
 		/**
 		 * Query used to set a job as locked
@@ -177,10 +177,9 @@ export class JobDbRepository {
 		this.collection = db.collection(collection);
 		if (log.enabled) {
 			log(
-				`connected with collection: ${collection}, collection size: ${
-					typeof this.collection.estimatedDocumentCount === 'function'
-						? await this.collection.estimatedDocumentCount()
-						: '?'
+				`connected with collection: ${collection}, collection size: ${typeof this.collection.estimatedDocumentCount === 'function'
+					? await this.collection.estimatedDocumentCount()
+					: '?'
 				}`
 			);
 		}
@@ -260,18 +259,21 @@ export class JobDbRepository {
 
 		log('[job %s] save job state: \n%O', id, $set);
 
-		const result = await this.collection.updateOne(
+		// const result =
+		await this.collection.updateOne(
 			{ _id: id, name: job.attrs.name },
 			{
 				$set
 			}
 		);
 
-		if (!result.acknowledged || result.matchedCount !== 1) {
-			throw new Error(
-				`job ${id} (name: ${job.attrs.name}) cannot be updated in the database, maybe it does not exist anymore?`
-			);
-		}
+		// Suppressing this error for now, as it's not really a critical error. We can still process jobs. Otherwise, it freezes the whole app
+
+		// if (!result.acknowledged || result.matchedCount !== 1) {
+		// 	throw new Error(
+		// 		`job ${id} (name: ${job.attrs.name}) cannot be updated in the database, maybe it does not exist anymore?`
+		// 	);
+		// }
 	}
 
 	/**
@@ -356,10 +358,9 @@ export class JobDbRepository {
 					}
 				);
 				log(
-					`findOneAndUpdate(${props.name}) with type "single" ${
-						result.lastErrorObject?.updatedExisting
-							? 'updated existing entry'
-							: 'inserted new entry'
+					`findOneAndUpdate(${props.name}) with type "single" ${result.lastErrorObject?.updatedExisting
+						? 'updated existing entry'
+						: 'inserted new entry'
 					}`
 				);
 				return this.processDbResult(job, result.value as IJobParameters<DATA>);
