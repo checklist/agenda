@@ -9,7 +9,7 @@ docs/agenda/*
 !docs/agenda/3.1.0/
 !docs/agenda/4.0.1/
 !docs/agenda/4.2.0/
-dist
+# dist
 .ultra.cache.json
 .vscode
 
@@ -97,7 +97,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist
 
 # Gatsby files
 .cache/
@@ -131,6 +131,6 @@ dist
 .pnp.*
 !docs/agenda/4.x/
 !docs/agenda/6.x/
-dist
+# dist
 .nyc_output
 coverage
